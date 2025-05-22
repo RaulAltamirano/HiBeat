@@ -281,16 +281,16 @@
     }
 </script>
 
-<div class="fixed inset-0 bg-white dark:bg-gray-900 transition-colors duration-300" class:dark-mode={player.darkMode}>
-    <div class="fixed top-0 left-0 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm z-50">
-        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
+<div class="music-player" class:dark-mode={player.darkMode}>
+    <div class="player-header">
+        <div class="header-content">
+            <div class="logo-container">
                 <svg class="logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5zm0-5.5c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z" fill="currentColor"/>
                 </svg>
                 <h2>HiBeat Player</h2>
             </div>
-            <div class="flex items-center space-x-4">
+            <div class="header-actions">
                 <button class="header-btn tooltip" on:click={toggleQueue} aria-label="Cola de reproducción">
                     <span class="tooltip-text">Cola</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -327,13 +327,13 @@
         </div>
     </div>
 
-    <div class="flex-1 mt-16 overflow-y-auto">
-        <div class="container mx-auto px-4 py-8">
+    <div class="player-content">
+        <div class="main-player">
             {#if player.currentTrack}
-                <div class="flex flex-col space-y-8">
-                    <div class="relative w-64 h-64 rounded-lg overflow-hidden cursor-pointer transition-transform duration-200">
+                <div class="now-playing">
+                    <div class="track-artwork-container">
                         <img src={player.currentTrack.image} alt={player.currentTrack.title} class="track-artwork" />
-                        <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 transition-opacity duration-200">
+                        <div class="track-overlay">
                             <button class="play-pause-btn" on:click={player.isPlaying ? pauseTrack : playTrack} aria-label={player.isPlaying ? 'Pausar' : 'Reproducir'}>
                                 {#if player.isPlaying}
                                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
@@ -349,13 +349,13 @@
                         </div>
                     </div>
                     
-                    <div class="flex-1 space-y-6">
+                    <div class="track-details">
                         <div class="track-info">
                             <h3 class="track-title">{player.currentTrack.title}</h3>
                             <p class="track-artist">{player.currentTrack.artist}</p>
                         </div>
                         
-                        <div class="h-24 bg-gray-100 dark:bg-gray-800 rounded-lg cursor-pointer transition-colors duration-200" class:active={visualizerActive} on:click={toggleVisualizer}>
+                        <div class="visualizer-container" class:active={visualizerActive} on:click={toggleVisualizer}>
                             {#if visualizerActive}
                                 <div class="visualizer-bars">
                                     {#each Array(40) as _, i}
@@ -363,24 +363,24 @@
                                     {/each}
                                 </div>
                             {:else}
-                                <div class="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
+                                <div class="visualizer-placeholder">
                                     <span>Click para activar visualizador</span>
                                 </div>
                             {/if}
                         </div>
                         
-                        <div class="flex items-center space-x-4">
+                        <div class="progress-container">
                             <span class="time-display">{formatTime(audio?.currentTime || 0)}</span>
-                            <div class="relative w-full h-1 bg-gray-200 dark:bg-gray-700 rounded-full cursor-pointer" on:click={handleProgressClick}>
-                                
-                                <div class="absolute inset-y-0 left-0 bg-blue-500 dark:bg-blue-400 rounded-full transition-all" style="width: {progressValue}%"></div>
-                                <div class="absolute -left-1.5 top-1/2 -mt-1.5 w-3 h-3 bg-blue-500 dark:bg-blue-400 rounded-full shadow transition-all" style="left: {progressValue}%"></div>
+                            <div class="progress-bar" on:click={handleProgressClick}>
+                                <div class="progress-background"></div>
+                                <div class="progress" style="width: {progressValue}%"></div>
+                                <div class="progress-handle" style="left: {progressValue}%"></div>
                             </div>
                             <span class="time-display">{formatTime(audio?.duration || 0)}</span>
                         </div>
                         
-                        <div class="flex items-center space-x-4">
-                            <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200" on:click={toggleShuffle} class:active={player.shuffle} aria-label="Aleatorio">
+                        <div class="player-controls">
+                            <button class="control-btn" on:click={toggleShuffle} class:active={player.shuffle} aria-label="Aleatorio">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="16 3 21 3 21 8"></polyline>
                                     <line x1="4" y1="20" x2="21" y2="3"></line>
@@ -390,14 +390,14 @@
                                 </svg>
                             </button>
                             
-                            <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200" on:click={previousTrack} aria-label="Anterior">
+                            <button class="control-btn" on:click={previousTrack} aria-label="Anterior">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <polygon points="19 20 9 12 19 4 19 20"></polygon>
                                     <line x1="5" y1="19" x2="5" y2="5"></line>
                                 </svg>
                             </button>
                             
-                            <button class="p-2 rounded-lg bg-blue-500 dark:bg-blue-400 text-white hover:bg-blue-600 dark:hover:bg-blue-500 transition-colors duration-200" on:click={player.isPlaying ? pauseTrack : playTrack} aria-label={player.isPlaying ? 'Pausar' : 'Reproducir'}>
+                            <button class="control-btn primary" on:click={player.isPlaying ? pauseTrack : playTrack} aria-label={player.isPlaying ? 'Pausar' : 'Reproducir'}>
                                 {#if player.isPlaying}
                                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <rect x="6" y="4" width="4" height="16" rx="1"></rect>
@@ -410,14 +410,14 @@
                                 {/if}
                             </button>
                             
-                            <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200" on:click={nextTrack} aria-label="Siguiente">
+                            <button class="control-btn" on:click={nextTrack} aria-label="Siguiente">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <polygon points="5 4 15 12 5 20 5 4"></polygon>
                                     <line x1="19" y1="5" x2="19" y2="19"></line>
                                 </svg>
                             </button>
                             
-                            <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200" on:click={toggleRepeat} class:active={player.repeat} aria-label="Repetir">
+                            <button class="control-btn" on:click={toggleRepeat} class:active={player.repeat} aria-label="Repetir">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="17 1 21 5 17 9"></polyline>
                                     <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
@@ -427,8 +427,8 @@
                             </button>
                         </div>
                         
-                        <div class="flex items-center space-x-4">
-                            <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200" on:click={toggleMute} aria-label={player.muted ? 'Activar sonido' : 'Silenciar'}>
+                        <div class="volume-container">
+                            <button class="volume-btn" on:click={toggleMute} aria-label={player.muted ? 'Activar sonido' : 'Silenciar'}>
                                 {#if player.muted || player.volume === 0}
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <line x1="1" y1="1" x2="23" y2="23"></line>
@@ -475,9 +475,9 @@
             {/if}
         </div>
 
-        <div class="fixed right-0 top-16 w-96 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 shadow-lg transition-transform duration-300" class:visible={showQueue || showRecommendations}>
-            <div class="border-b border-gray-200 dark:border-gray-700">
-                <button class="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200" class:active={showQueue} on:click={toggleQueue}>Cola</button>
+        <div class="side-panel" class:visible={showQueue || showRecommendations}>
+            <div class="panel-tabs">
+                <button class="panel-tab" class:active={showQueue} on:click={toggleQueue}>Cola</button>
                 <button class="panel-tab" class:active={showRecommendations} on:click={toggleRecommendations}>Recomendaciones</button>
                 <button class="close-panel" on:click={closePanel} aria-label="Cerrar panel">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -548,6 +548,210 @@
         </div>
     </div>
 </div>
+
+<style>
+    /* Variables CSS para personalización y coherencia */
+    :root {
+        --primary-color: #5a67d8;
+        --primary-hover: #4c51bf;
+        --background-light: #f7fafc;
+        --background-dark: #161b22;
+        --surface-light: #ffffff;
+        --surface-dark: #1e2329;
+        --text-light: #1a202c;
+        --text-dark: #e2e8f0;
+        --accent-light: #6366f1;
+        --accent-dark: #818cf8;
+        --border-light: #e2e8f0;
+        --border-dark: #30363d;
+        --shadow-light: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        --shadow-dark: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        --transition-default: all 0.3s ease;
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+    }
+
+    /* Estilos base y modo oscuro */
+    .music-player {
+        width: 100%;
+        max-width: 1100px;
+        margin: 0 auto;
+        background: var(--surface-light);
+        color: var(--text-light);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-light);
+        overflow: hidden;
+        transition: var(--transition-default);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    .dark-mode {
+        background: var(--surface-dark);
+        color: var(--text-dark);
+        box-shadow: var(--shadow-dark);
+    }
+
+    /* Encabezado del reproductor */
+    .player-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .dark-mode .player-header {
+        border-bottom: 1px solid var(--border-dark);
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .logo-icon {
+        color: var(--primary-color);
+    }
+
+    .dark-mode .logo-icon {
+        color: var(--accent-dark);
+    }
+
+    .header-content h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .header-btn {
+        background: transparent;
+        border: none;
+        border-radius: var(--radius-sm);
+        color: var(--text-light);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem;
+        transition: var(--transition-default);
+        position: relative;
+    }
+
+    .dark-mode .header-btn {
+        color: var(--text-dark);
+    }
+
+    .header-btn:hover {
+        background: rgba(0, 0, 0, 0.05);
+    }
+
+    .dark-mode .header-btn:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Tooltip */
+    .tooltip {
+        position: relative;
+    }
+
+    .tooltip-text {
+        visibility: hidden;
+        width: auto;
+        min-width: 80px;
+        background-color: rgba(0, 0, 0, 0.75);
+        color: #fff;
+        text-align: center;
+        border-radius: 4px;
+        padding: 5px 8px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 0;
+        transition: opacity 0.2s, visibility 0.2s;
+        font-size: 0.75rem;
+        pointer-events: none;
+        white-space: nowrap;
+    }
+
+    .tooltip:hover .tooltip-text {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    /* Contenido principal */
+    .player-content {
+        display: flex;
+        gap: 1.5rem;
+        padding: 1.5rem;
+        height: calc(100% - 70px);
+        position: relative;
+    }
+
+    /* Reproductor principal */
+    .main-player {
+        flex: 1;
+        background: var(--background-light);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        transition: var(--transition-default);
+        height: 100%;
+        min-height: 500px;
+    }
+
+    .dark-mode .main-player {
+        background: var(--background-dark);
+    }
+
+    .now-playing {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .track-artwork-container {
+        position: relative;
+        width: 100%;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        overflow: hidden;
+        border-radius: var(--radius-md) var(--radius-md) 0 0;
+    }
+
+    .track-artwork {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .track-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.3);
+        opacity: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.3s ease;
+    }
+
     .track-artwork-container:hover .track-overlay {
         opacity: 1;
     }
